@@ -1,0 +1,19 @@
+Package: subfunc
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Author: Chunyu
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: sub functions used for 16S metagenomic analysis as wel as the statistical analysis
+License: R (>= 3.1.0)
+LazyData: TRUE
+Imports:
+    dplyr (>= 0.5.0.9000),
+    ggplot2 (>= 2.1.0),
+    qiimer (>= 0.9.4),
+    reshape2 (>= 1.4.1),
+    broom (>= 0.4.1),
+    ape (>= 3.5),
+    kylemisc (>= 0.0.6),
+    vegan (>= 2.4.0),
+    tidyr (>= 0.5.1)

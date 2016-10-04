@@ -253,3 +253,18 @@ make_pcoa_plot <- function(uu, s, shape_by, color_by, title) {
   }
   return(g_uu)
 }
+
+
+#### useful functions from ceylan ####
+filter_low_coverage <- function(props, perc_cutoff){
+  frac_nonzero <- function (x) sum(x > 0) / length(x)
+  apply(props, 1, frac_nonzero) >= perc_cutoff
+}
+rearrange_props <- function(props, sampleIDs) {
+  props[,match(sampleIDs, colnames(props))] %>%
+    subset(rowSums(.) != 0)
+}
+rearrange_sample_sheet <- function(s, sampleIDs) {
+  s[match(sampleIDs, s$SampleID),]
+}
+#### useful functions from ceylan ####

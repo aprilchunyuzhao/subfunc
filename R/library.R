@@ -59,12 +59,12 @@ tidy_permanova_one_way_posthoc <- function(dist_mat, s_toTest, grp1, perm=99, p_
   a_ixn <- data.frame(comparison=grp1, tidy_permanova_one_way(dist_mat, s_toTest, grp1, perm=perm)[1,])
   combs <- combn(unique(s_toTest[[grp1]]), 2)
   num_tests <- dim(combs)[2]
-  
+
   # do post hoc tests
   if (a_ixn$p.value < p_cutoff) {
     post_hocs <- lapply(1:num_tests,
                         function(x) data.frame(comparison = paste(combs[,x], collapse=' - '),
-                                               tidy_permanova_one_way(dist_mat, 
+                                               tidy_permanova_one_way(dist_mat,
                                                                       s_toTest[is.element(s_toTest[[grp1]], combs[,x]),], grp1,perm=perm)[1,]) )
     a_ixn <- rbind(a_ixn, do.call(rbind, post_hocs))
   }
@@ -83,12 +83,12 @@ tidy_permanova_one_way_strata_posthoc <- function(dist_mat, s_toTest, grp1, reps
   a_ixn <- data.frame(comparison=grp1, tidy_permanova_one_way_strata(dist_mat, s_toTest, grp1, reps, perm=perm)[1,])
   combs <- combn(unique(s_toTest[[grp1]]), 2)
   num_tests <- dim(combs)[2]
-  
+
   # do post hoc tests
   if (a_ixn$p.value < p_cutoff) {
     post_hocs <- lapply(1:num_tests,
                         function(x) data.frame(comparison = paste(combs[,x], collapse=' - '),
-                                               tidy_permanova_one_way_strata(dist_mat, 
+                                               tidy_permanova_one_way_strata(dist_mat,
                                                                              s_toTest[is.element(s_toTest[[grp1]], combs[,x]),], grp1, reps, perm=perm)[1,]) )
     a_ixn <- rbind(a_ixn, do.call(rbind, post_hocs))
   }
@@ -98,7 +98,7 @@ tidy_permanova_one_way_strata_posthoc <- function(dist_mat, s_toTest, grp1, reps
 tidy_permanova_repeated_measures <- function (dist_mat, s_toTest, grp1, grp2=NULL, reps, perm=99) {
   ## unrestricted permutations adnois
   dist_toTest <- dist_subset(dist_mat, s_toTest$SampleID)
-  
+
   if(is.null(grp2)){
     form1 <- paste("dist_toTest", "~", grp1)
     title = "one way permanova with repeated measures result"
@@ -106,9 +106,9 @@ tidy_permanova_repeated_measures <- function (dist_mat, s_toTest, grp1, grp2=NUL
     form1 <- paste("dist_toTest", "~", grp1, "*", grp2)
     title = "two way permanova with repeated measures result"
   }
-  
+
   a_ixn <- adonis(as.formula(form1), data=s_toTest, permutations = perm)
-  
+
   #### update the p value for the first factor grp1 ####
   set.seed(100)
   f_ixn1 <- a_ixn$aov.tab[1, 4]
@@ -120,12 +120,12 @@ tidy_permanova_repeated_measures <- function (dist_mat, s_toTest, grp1, grp2=NUL
   })
   p_ixn1 <- sum(c(f_ixn1, fs_permuted1) >= f_ixn1) / (length(fs_permuted1) + 1)
   a_ixn$aov.tab[1,6] <- p_ixn1
-  
+
   if(!is.null(grp2)){
     #### upadte the p value for interaction term ####
     ## shuffle_between_groups: same SubjectID didn't get different study groups
     ## shuffle_within_groups: same SubjectID didn't get same days
-    f_ixn <- a_ixn$aov.tab[3, 4] 
+    f_ixn <- a_ixn$aov.tab[3, 4]
     fs_permuted <- replicate(perm, {
       s_permuted <- s_toTest
       s_permuted[,grp1] <- shuffle_between_groups(s_permuted[[grp1]], s_permuted[[reps]])
@@ -136,30 +136,30 @@ tidy_permanova_repeated_measures <- function (dist_mat, s_toTest, grp1, grp2=NUL
     ## update the p value calculated from permutations
     p_ixn <- sum(c(f_ixn, fs_permuted) >= f_ixn) / (length(fs_permuted) + 1)
     a_ixn$aov.tab[3,6] <- p_ixn
-    
+
     #### update the p value for the second factor: has to be time points (grp2) ####
     form2 <- paste("dist_toTest", "~", grp2)
     a_ixn_day <- adonis(as.formula(form2), data = s_toTest, strata =s_toTest[[reps]])
     a_ixn$aov.tab[2,6] <- a_ixn_day$aov.tab[1,6]
   }
-  
+
   #### show the result
   dataframe_permanova(a_ixn)
 }
 
 tidy_permanova_one_way_repeated_measures_posthoc <- function(dist_mat, s_toTest, grp1, reps, perm=99, p_cutoff=0.05) {
   ## one way permanova post hoc with repeated measures
-  a_ixn <- data.frame(comparison=grp1, 
+  a_ixn <- data.frame(comparison=grp1,
                       tidy_permanova_repeated_measures(dist_mat, s_toTest, grp1, grp2=NULL,reps,perm=perm)[1,])
   combs <- combn(unique(s_toTest[[grp1]]), 2)
   num_tests <- dim(combs)[2]
-  
+
   # do post hoc tests
   if (a_ixn$p.value < p_cutoff) {
     post_hocs <- lapply(1:num_tests,
                         function(x) data.frame(
                           comparison = paste(combs[,x], collapse=' - '),
-                          tidy_permanova_repeated_measures(dist_mat, 
+                          tidy_permanova_repeated_measures(dist_mat,
                                                            s_toTest[is.element(s_toTest[[grp1]], combs[,x]),], grp1,grp2=NULL,reps, perm=perm)[1,]) )
     a_ixn <- rbind(a_ixn, do.call(rbind, post_hocs))
   }
@@ -254,6 +254,15 @@ make_pcoa_plot <- function(uu, s, shape_by, color_by, title) {
   return(g_uu)
 }
 
+filter_contam <- function(adf){
+  # this function is used to filter out chloroplast, mitochondiral, archaea and unassigned sequences
+  is_mitochondrial <- grepl("mitochondria", adf$Family)
+  is_chloroplast <- grepl("Chloroplast", adf$Class)
+  is_unassigned <- grepl("Unassigned", adf$Kingdom)
+  is_archaea <- grepl("Archaea", adf$Kingdom)
+  is_contam <- is_mitochondrial | is_chloroplast | is_unassigned | is_archaea
+  return(is_contam)
+}
 
 #### useful functions from ceylan ####
 filter_low_coverage <- function(props, perc_cutoff){

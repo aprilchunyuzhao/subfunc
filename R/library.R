@@ -51,10 +51,12 @@ dataframe_permanova <- function(a_ixn) {
 tidy_permanova_one_way <- function(dist_mat, s_toTest, grp1, perm=99) {
   dist_toTest <- dist_subset(dist_mat, s_toTest$SampleID)
   form1 <- paste("dist_toTest", "~", grp1)
+  set.seed(11)
   dataframe_permanova(adonis(as.formula(form1), data=s_toTest, permutations=perm))
 }
 
 tidy_permanova_one_way_posthoc <- function(dist_mat, s_toTest, grp1, perm=99, p_cutoff=0.05){
+  set.seed(12)
   ## one way permanova post hoc
   a_ixn <- data.frame(comparison=grp1, tidy_permanova_one_way(dist_mat, s_toTest, grp1, perm=perm)[1,])
   combs <- combn(unique(s_toTest[[grp1]]), 2)
@@ -74,12 +76,14 @@ tidy_permanova_one_way_posthoc <- function(dist_mat, s_toTest, grp1, perm=99, p_
 tidy_permanova_one_way_strata <- function(dist_mat, s_toTest, grp1, reps, perm=99) {
   dist_toTest <- dist_subset(dist_mat, s_toTest$SampleID)
   form1 <- paste("dist_toTest", "~", grp1)
+  set.seed(20)
   a_ixn_day <- adonis(as.formula(form1), data = s_toTest, strata = s_toTest[[reps]], permutations=perm)
   dataframe_permanova(a_ixn_day)
 }
 
 tidy_permanova_one_way_strata_posthoc <- function(dist_mat, s_toTest, grp1, reps, perm=99, p_cutoff=0.05){
   ## one way permanova post hoc
+  set.seed(30)
   a_ixn <- data.frame(comparison=grp1, tidy_permanova_one_way_strata(dist_mat, s_toTest, grp1, reps, perm=perm)[1,])
   combs <- combn(unique(s_toTest[[grp1]]), 2)
   num_tests <- dim(combs)[2]
@@ -97,6 +101,7 @@ tidy_permanova_one_way_strata_posthoc <- function(dist_mat, s_toTest, grp1, reps
 
 tidy_permanova_repeated_measures <- function (dist_mat, s_toTest, grp1, grp2=NULL, reps, perm=99) {
   ## unrestricted permutations adnois
+  set.seed(100)
   dist_toTest <- dist_subset(dist_mat, s_toTest$SampleID)
 
   if(is.null(grp2)){
@@ -110,7 +115,6 @@ tidy_permanova_repeated_measures <- function (dist_mat, s_toTest, grp1, grp2=NUL
   a_ixn <- adonis(as.formula(form1), data=s_toTest, permutations = perm)
 
   #### update the p value for the first factor grp1 ####
-  set.seed(100)
   f_ixn1 <- a_ixn$aov.tab[1, 4]
   fs_permuted1 <- replicate(perm, {
     s_permuted <- s_toTest
@@ -119,6 +123,7 @@ tidy_permanova_repeated_measures <- function (dist_mat, s_toTest, grp1, grp2=NUL
     a_permuted$aov.tab[1, 4]
   })
   p_ixn1 <- sum(c(f_ixn1, fs_permuted1) >= f_ixn1) / (length(fs_permuted1) + 1)
+  ## we want to keep the observed statistics with the perm ones => otherwise the estimate is baised
   a_ixn$aov.tab[1,6] <- p_ixn1
 
   if(!is.null(grp2)){
@@ -149,6 +154,7 @@ tidy_permanova_repeated_measures <- function (dist_mat, s_toTest, grp1, grp2=NUL
 
 tidy_permanova_one_way_repeated_measures_posthoc <- function(dist_mat, s_toTest, grp1, reps, perm=99, p_cutoff=0.05) {
   ## one way permanova post hoc with repeated measures
+  set.seed(300)
   a_ixn <- data.frame(comparison=grp1,
                       tidy_permanova_repeated_measures(dist_mat, s_toTest, grp1, grp2=NULL,reps,perm=perm)[1,])
   combs <- combn(unique(s_toTest[[grp1]]), 2)

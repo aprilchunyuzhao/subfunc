@@ -63,7 +63,7 @@ tidy_permanova_one_way_posthoc <- function(dist_mat, s_toTest, grp1, perm=99, p_
   num_tests <- dim(combs)[2]
 
   # do post hoc tests
-  if (a_ixn$p.value < p_cutoff) {
+  if (a_ixn$p.value <= p_cutoff) {
     post_hocs <- lapply(1:num_tests,
                         function(x) data.frame(comparison = paste(combs[,x], collapse=' - '),
                                                tidy_permanova_one_way(dist_mat,
@@ -89,7 +89,7 @@ tidy_permanova_one_way_strata_posthoc <- function(dist_mat, s_toTest, grp1, reps
   num_tests <- dim(combs)[2]
 
   # do post hoc tests
-  if (a_ixn$p.value < p_cutoff) {
+  if (a_ixn$p.value <= p_cutoff) {
     post_hocs <- lapply(1:num_tests,
                         function(x) data.frame(comparison = paste(combs[,x], collapse=' - '),
                                                tidy_permanova_one_way_strata(dist_mat,
@@ -161,7 +161,7 @@ tidy_permanova_one_way_repeated_measures_posthoc <- function(dist_mat, s_toTest,
   num_tests <- dim(combs)[2]
 
   # do post hoc tests
-  if (a_ixn$p.value < p_cutoff) {
+  if (a_ixn$p.value <= p_cutoff) {
     post_hocs <- lapply(1:num_tests,
                         function(x) data.frame(
                           comparison = paste(combs[,x], collapse=' - '),
@@ -201,7 +201,7 @@ tidy_anova_repeated_measures_posthoc <- function (s_sub, form1, group_label, p_c
 
   # pairwise posthoc test, based on anova with repeated measures
   # anov$p.value < p_cutoff <- Ask Kyle: why the p-value are different...!!!
-  if (anov$p.value < p_cutoff) {
+  if (anov$p.value <= p_cutoff) {
     post_hocs <- lapply(1:num_tests,
                         function(x) data.frame(comparison = paste(combs[,x], collapse='-'),
                                                tidy_anova_repeated_measures(aov(as.formula(form1),
@@ -221,7 +221,7 @@ tidy_anova_posthoc <- function (s_sub, form1, group_label, p_cutoff = 0.05) {
 
   # pairwise posthoc test, based on anova with repeated measures
   # anov$p.value < p_cutoff <- Ask Kyle: why the p-value are different...!!!
-  if (anov$p.value < p_cutoff) {
+  if (anov$p.value <= p_cutoff) {
     post_hocs <- lapply(1:num_tests,
                         function(x) data.frame(comparison = paste(combs[,x], collapse='-'),
                                                tidy_anova(aov(as.formula(form1),

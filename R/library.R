@@ -48,6 +48,7 @@ dataframe_permanova <- function(a_ixn) {
     rename(p.value = Pr..F.)
 }
 
+## 20170117: often cause error and not using it anymore
 tidy_permanova_one_way <- function(dist_mat, s_toTest, grp1, perm=99) {
   dist_toTest <- dist_subset(dist_mat, s_toTest$SampleID)
   form1 <- paste("dist_toTest", "~", grp1)
